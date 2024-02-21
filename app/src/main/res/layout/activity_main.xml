@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    tools:context=".MainActivity">
+
+    <!-- here's the result of the calculator shows  -->
+
+    <GridLayout
+        android:id="@+id/buttonsGrid"
+        android:layout_width="391dp"
+        android:layout_height="240dp"
+        android:layout_margin="8dp"
+        android:alignmentMode="alignMargins"
+        android:backgroundTint="#FF9696"
+        android:columnCount="4"
+
+        android:columnOrderPreserved="false"
+        android:rowCount="5"
+        android:rowOrderPreserved="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintVertical_bias="0.416">
+
+        <!-- Row 1 -->
+        <Button
+            android:id="@+id/buttonClear"
+            android:backgroundTint="@color/red"
+            android:text="C" />
+
+        <Button
+            android:id="@+id/buttonBackspace"
+            android:backgroundTint="@color/gray"
+            android:text="DEL" />
+
+        <Button
+            android:id="@+id/buttonPercent"
+            android:backgroundTint="@color/orange"
+            android:text="%" />
+
+        <Button
+            android:id="@+id/buttonDivide"
+            android:backgroundTint="@color/orange"
+            android:text="/" />
+
+        <!-- Row 2 -->
+        <Button
+            android:id="@+id/button7"
+            android:backgroundTint="@color/teal"
+            android:text="7" />
+
+        <Button
+            android:id="@+id/button8"
+
+            android:backgroundTint="@color/teal"
+
+            android:text="8" />
+
+        <Button
+            android:id="@+id/button9"
+
+            android:backgroundTint="@color/teal"
+            android:text="9" />
+        />
+
+        <Button
+            android:id="@+id/buttonMultiply"
+
+            android:backgroundTint="@color/orange"
+            android:text="×" />
+
+        <!-- Row 3 -->
+        <Button
+            android:id="@+id/button4"
+
+            android:backgroundTint="@color/teal"
+            android:text="4" />
+        />
+
+        <Button
+            android:id="@+id/button5"
+
+            android:backgroundTint="@color/teal"
+            android:text="5" />
+        />
+
+        <Button
+            android:id="@+id/button6"
+
+            android:backgroundTint="@color/teal"
+            android:text="6" />
+        />
+
+        <Button
+            android:id="@+id/buttonSubtract"
+            android:backgroundTint="@color/orange"
+            android:text="-" />
+
+        <!-- Row 4 -->
+        <Button
+            android:id="@+id/button1"
+
+            android:backgroundTint="@color/teal"
+            android:text="1" />
+        />
+
+        <Button
+            android:id="@+id/button2"
+
+            android:backgroundTint="@color/teal"
+            android:text="2" />
+        />
+
+        <Button
+            android:id="@+id/button3"
+
+            android:backgroundTint="@color/teal"
+            android:text="3" />
+        />
+
+        <Button
+            android:id="@+id/buttonAdd"
+            android:backgroundTint="@color/orange"
+            android:text="+" />
+
+        <!-- Row 5 -->
+        <Button
+            android:id="@+id/buttonSign"
+
+            android:backgroundTint="@color/orange"
+            android:text="+/-" />
+        />
+
+        <Button
+            android:id="@+id/button0"
+
+            android:backgroundTint="@color/teal"
+            android:text="0" />
+        />
+
+        <Button
+            android:id="@+id/buttonDecimal"
+
+            android:backgroundTint="@color/teal"
+            android:text="." />
+        />
+
+        <Button
+            android:id="@+id/buttonEqual"
+            android:backgroundTint="@color/purple"
+            android:text="=" />
+
+    </GridLayout>
+
+    <EditText
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/lightGray"
+        android:hint="Enter Your Input..."
+        android:inputType="text"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonTopaysage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@color/red"
+        android:text="Landscape Mode"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsGrid">
+
+    </Button>
+</androidx.constraintlayout.widget.ConstraintLayout>

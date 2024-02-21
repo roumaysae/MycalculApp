@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ButtonsCalc" parent="android:Widget.Button">
+        <item name="android:backgroundTint">@color/orange</item>
+
+    </style>
+    <style name="Button2" parent="android:Widget.Button">
+        <item name="android:backgroundTint">@color/gray</item>
+    </style>
+</resources>
