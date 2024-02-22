@@ -202,6 +202,7 @@ public class Paysage_Format extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Start MainActivity when back button is pressed
+        super.onBackPressed();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
