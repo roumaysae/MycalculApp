@@ -3,27 +3,24 @@ package com.example.mycalculapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import org.mariuszgromada.math.mxparser.*;
 
 public class Paysage_Format extends AppCompatActivity {
     private TextView resultText;
-    private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, buttonPlus, buttonMinus, buttonMultiply, buttonDivide, buttonEqual, buttonDot, buttonClear,buttonSign,buttonBackspace,buttonPercent;
-
-    private double firstValue = 0.0;
-    private double secondValue = 0.0;
-    private String currentOperator =  "";
-//
-   private Button buttonToportrait;
+    private Button button0, button1, button2, button3, button4, button5, button6, button7, button8, button9, buttonPlus, buttonMinus, buttonMultiply, buttonDivide, buttonEqual, buttonDot, buttonClear, buttonBackspace, buttonPercent;
+    private Button buttonSign;
+    private String currentExpression = ""; // Current expression string
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paysage_format);
 
+        // Initialize views
         resultText = findViewById(R.id.textView);
         button0 = findViewById(R.id.button0);
         button1 = findViewById(R.id.button1);
@@ -42,56 +39,111 @@ public class Paysage_Format extends AppCompatActivity {
         buttonEqual = findViewById(R.id.buttonEqual);
         buttonDot = findViewById(R.id.buttonDecimal);
         buttonClear = findViewById(R.id.buttonClear);
-        buttonSign = findViewById(R.id.buttonSign);
-        buttonPercent = findViewById(R.id.buttonPercent);
         buttonBackspace = findViewById(R.id.buttonBackspace);
-      buttonToportrait = findViewById(R.id.buttonToportrait);
-//Paysage format buttons:
-        Button buttonSqrt = findViewById(R.id.buttonSqrt);
-        Button buttonSquare = findViewById(R.id.buttonSquare);
-        Button buttonPower = findViewById(R.id.buttonPower);
-        Button buttonPi = findViewById(R.id.buttonPi);
-        Button buttonSin = findViewById(R.id.buttonSin);
-        Button buttonCos = findViewById(R.id.buttonCos);
-        Button buttonTan = findViewById(R.id.buttonTan);
-        Button buttonLog = findViewById(R.id.buttonLog);
-        Button buttonLn = findViewById(R.id.buttonLn);
-        Button buttonFactorial = findViewById(R.id.buttonFactorial);
-        Button buttonE = findViewById(R.id.buttonE);
-        Button buttonModulus = findViewById(R.id.buttonModulus);
-        Button buttonOpenParenthesis = findViewById(R.id.buttonOpenParenthesis);
-        Button buttonCloseParenthesis = findViewById(R.id.buttonCloseParenthesis);
-        Button buttonComma = findViewById(R.id.buttonComma);
-        Button buttonRad = findViewById(R.id.buttonRad);
-        Button buttonDeg = findViewById(R.id.buttonDeg);
-        Button buttonInverse = findViewById(R.id.buttonInverse);
-        Button buttonAbs = findViewById(R.id.buttonAbs);
-        Button buttonExp = findViewById(R.id.buttonExp);
+        buttonPercent = findViewById(R.id.buttonPercent);
+        buttonSign=findViewById(R.id.buttonSign);
 
-      buttonToportrait.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Paysage_Format.this, MainActivity.class);
-                startActivity(intent);
+        // Set click listeners for number buttons
+        setNumberButtonClickListeners();
+
+        // Set click listeners for operator buttons
+        setOperatorButtonClickListeners();
+
+        // Set click listener for clear button
+        buttonClear.setOnClickListener(v -> clearExpression());
+
+        // Handle backspace functionality
+        buttonBackspace.setOnClickListener(v -> backspace());
+
+        // Calculate the result when the equal button is clicked
+        buttonEqual.setOnClickListener(v -> evaluateExpression());
+
+        // Set click listener for percent button
+        buttonPercent.setOnClickListener(v -> {
+            String currentText = resultText.getText().toString();
+            if (!currentText.isEmpty()) {
+                double value = Double.parseDouble(currentText);
+                resultText.setText(String.valueOf(value / 100));
             }
         });
 
-        View.OnClickListener numberButtonClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button b = (Button) v;
-                resultText.append(b.getText().toString());
+        // Set click listener for sign button
+        buttonSign.setOnClickListener(v -> {
+            String currentText = resultText.getText().toString();
+            if (!currentText.isEmpty()) {
+                double value = Double.parseDouble(currentText);
+                resultText.setText(String.valueOf(-value));
             }
-        };
+        });
 
-        View.OnClickListener operatorButtonClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button b = (Button) v;
-                firstValue = Double.valueOf(resultText.getText().toString());
-                resultText.setText("");
-                currentOperator = b.getText().toString();
-            }
+        // Handle click listeners for scientific operations buttons using mxparser
+        Button buttonSqrt = findViewById(R.id.buttonSqrt);
+        buttonSqrt.setOnClickListener(v -> appendToExpression("sqrt("));
+
+        Button buttonSquare = findViewById(R.id.buttonSquare);
+        buttonSquare.setOnClickListener(v -> appendToExpression("^2"));
+
+        Button buttonPower = findViewById(R.id.buttonPower);
+        buttonPower.setOnClickListener(v -> appendToExpression("^"));
+
+        Button buttonPi = findViewById(R.id.buttonPi);
+        buttonPi.setOnClickListener(v -> appendToExpression(String.valueOf(Math.PI)));
+
+        Button buttonSin = findViewById(R.id.buttonSin);
+        buttonSin.setOnClickListener(v -> appendToExpression("sin("));
+
+        Button buttonCos = findViewById(R.id.buttonCos);
+        buttonCos.setOnClickListener(v -> appendToExpression("cos("));
+
+        Button buttonTan = findViewById(R.id.buttonTan);
+        buttonTan.setOnClickListener(v -> appendToExpression("tan("));
+
+        Button buttonLog = findViewById(R.id.buttonLog);
+        buttonLog.setOnClickListener(v -> appendToExpression("log("));
+
+        Button buttonLn = findViewById(R.id.buttonLn);
+        buttonLn.setOnClickListener(v -> appendToExpression("ln("));
+
+        Button buttonFactorial = findViewById(R.id.buttonFactorial);
+        buttonFactorial.setOnClickListener(v -> appendToExpression("!"));
+
+        Button buttonE = findViewById(R.id.buttonE);
+        buttonE.setOnClickListener(v -> appendToExpression("e"));
+
+        Button buttonModulus = findViewById(R.id.buttonModulus);
+        buttonModulus.setOnClickListener(v -> appendToExpression("abs("));
+
+        Button buttonOpenParenthesis = findViewById(R.id.buttonOpenParenthesis);
+        buttonOpenParenthesis.setOnClickListener(v -> appendToExpression("("));
+
+        Button buttonCloseParenthesis = findViewById(R.id.buttonCloseParenthesis);
+        buttonCloseParenthesis.setOnClickListener(v -> appendToExpression(")"));
+
+        Button buttonComma = findViewById(R.id.buttonComma);
+        buttonComma.setOnClickListener(v -> appendToExpression(","));
+
+        Button buttonRad = findViewById(R.id.buttonRad);
+        buttonRad.setOnClickListener(v -> appendToExpression("rad("));
+
+        Button buttonDeg = findViewById(R.id.buttonDeg);
+        buttonDeg.setOnClickListener(v -> appendToExpression("deg("));
+
+        Button buttonInverse = findViewById(R.id.buttonInverse);
+        buttonInverse.setOnClickListener(v -> appendToExpression("^(-1)"));
+
+        Button buttonAbs = findViewById(R.id.buttonAbs);
+        buttonAbs.setOnClickListener(v -> appendToExpression("abs("));
+
+        Button buttonExp = findViewById(R.id.buttonExp);
+        buttonExp.setOnClickListener(v -> appendToExpression("exp("));
+
+    }
+
+    // Method to set click listeners for number buttons
+    private void setNumberButtonClickListeners() {
+        View.OnClickListener numberButtonClickListener = v -> {
+            Button b = (Button) v;
+            appendToExpression(b.getText().toString());
         };
 
         button0.setOnClickListener(numberButtonClickListener);
@@ -104,200 +156,54 @@ public class Paysage_Format extends AppCompatActivity {
         button7.setOnClickListener(numberButtonClickListener);
         button8.setOnClickListener(numberButtonClickListener);
         button9.setOnClickListener(numberButtonClickListener);
-        buttonDot.setOnClickListener(numberButtonClickListener);
+        buttonDot.setOnClickListener(v -> appendToExpression("."));
+    }
+
+    // Method to set click listeners for operator buttons
+    private void setOperatorButtonClickListeners() {
+        View.OnClickListener operatorButtonClickListener = v -> {
+            Button b = (Button) v;
+            appendToExpression(" " + b.getText().toString() + " ");
+        };
+
         buttonPlus.setOnClickListener(operatorButtonClickListener);
         buttonMinus.setOnClickListener(operatorButtonClickListener);
         buttonMultiply.setOnClickListener(operatorButtonClickListener);
         buttonDivide.setOnClickListener(operatorButtonClickListener);
-        buttonSign.setOnClickListener(operatorButtonClickListener);
-        buttonPercent.setOnClickListener(operatorButtonClickListener);
-        buttonBackspace.setOnClickListener(operatorButtonClickListener);
-//buttons of paysage mode :
-        buttonSqrt.setOnClickListener(numberButtonClickListener);
-        buttonSquare.setOnClickListener(numberButtonClickListener);
-        buttonPower.setOnClickListener(numberButtonClickListener);
-        buttonPi.setOnClickListener(numberButtonClickListener);
-        buttonSin.setOnClickListener(numberButtonClickListener);
-        buttonCos.setOnClickListener(numberButtonClickListener);
-        buttonTan.setOnClickListener(numberButtonClickListener);
-        buttonLog.setOnClickListener(numberButtonClickListener);
-        buttonLn.setOnClickListener(numberButtonClickListener);
-        buttonFactorial.setOnClickListener(numberButtonClickListener);
-        buttonE.setOnClickListener(numberButtonClickListener);
-        buttonModulus.setOnClickListener(numberButtonClickListener);
-        buttonOpenParenthesis.setOnClickListener(numberButtonClickListener);
-        buttonCloseParenthesis.setOnClickListener(numberButtonClickListener);
-        buttonComma.setOnClickListener(numberButtonClickListener);
-        buttonRad.setOnClickListener(numberButtonClickListener);
-        buttonDeg.setOnClickListener(numberButtonClickListener);
-        buttonInverse.setOnClickListener(numberButtonClickListener);
-        buttonAbs.setOnClickListener(numberButtonClickListener);
-        buttonExp.setOnClickListener(numberButtonClickListener);
-
-        //defining the buttons fucntions!:
-        buttonSqrt.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double sqrt = Math.sqrt(value);
-            resultText.setText(String.valueOf(sqrt));
-        });
-        buttonSquare.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double square = value * value;
-            resultText.setText(String.valueOf(square));
-        });
-
-        buttonPower.setOnClickListener(v -> {
-                firstValue = Double.parseDouble(resultText.getText().toString());
-                resultText.setText(""); // Clear the result text after operator click
-                currentOperator = "^"; // Setting operator to indicate power operation
-            });
-        buttonPi.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double pi=value*3.14;
-            resultText.setText(String.valueOf(pi));
-            });
-
-        buttonSin.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double sinValue = Math.sin(value);
-            resultText.setText(String.valueOf(sinValue));
-        });
-
-        buttonCos.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double cosValue = Math.cos(value);
-            resultText.setText(String.valueOf(cosValue));
-        });
-
-        buttonTan.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double tanValue = Math.tan(value);
-            resultText.setText(String.valueOf(tanValue));
-        });
-
-        buttonLog.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double logValue = Math.log10(value);
-            resultText.setText(String.valueOf(logValue));
-        });
-
-        buttonLn.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double lnValue = Math.log(value);
-            resultText.setText(String.valueOf(lnValue));
-        });
-
-        buttonFactorial.setOnClickListener(v -> {
-            int value = Integer.parseInt(resultText.getText().toString());
-            int factorial = 1;
-            for (int i = 1; i <= value; i++) {
-                factorial *= i;
-            }
-            resultText.setText(String.valueOf(factorial));
-        });
-
-        buttonE.setOnClickListener(v -> {
-            double eValue = Math.E;
-            resultText.setText(String.valueOf(eValue));
-        });
-
-        buttonModulus.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double modulus = Math.abs(value);
-            resultText.setText(String.valueOf(modulus));
-        });
-
-        buttonOpenParenthesis.setOnClickListener(v -> resultText.append("("));
-
-        buttonCloseParenthesis.setOnClickListener(v -> resultText.append(")"));
-
-        buttonComma.setOnClickListener(v -> resultText.append(","));
-
-        buttonRad.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            // Check if the value is already in radians
-            if (value >= 0 && value <= 2 * Math.PI) {
-                // Value is in radians, no need to convert
-                resultText.setText(String.valueOf(value));
-            } else {
-                // Value is in degrees, convert to radians
-                double radValue = Math.toRadians(value);
-                resultText.setText(String.valueOf(radValue));
-            }
-        });
-        buttonDeg.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double degValue = Math.toDegrees(value);
-            resultText.setText(String.valueOf(degValue));
-        });
-
-        buttonInverse.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double inverse = 1 / value;
-            resultText.setText(String.valueOf(inverse));
-        });
-
-        buttonAbs.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double absValue = Math.abs(value);
-            resultText.setText(String.valueOf(absValue));
-        });
-
-        buttonExp.setOnClickListener(v -> {
-            double value = Double.parseDouble(resultText.getText().toString());
-            double expValue = Math.exp(value);
-            resultText.setText(String.valueOf(expValue));
-        });
-
-
-
-        buttonBackspace.setOnClickListener(v -> {
-            String currentText = resultText.getText().toString();
-            if (!currentText.isEmpty()) {
-                String newText = currentText.substring(0, currentText.length() - 1);
-                resultText.setText(newText);
-            }
-        });
-
-        buttonSign.setOnClickListener(v -> {
-            String currentText = resultText.getText().toString();
-            if (!currentText.isEmpty()) {
-                double value = Double.parseDouble(currentText);
-                resultText.setText(String.valueOf(-value));
-            }
-        });
-
-
-        buttonPercent.setOnClickListener(v -> {
-            String currentText = resultText.getText().toString();
-            if (!currentText.isEmpty()) {
-                double value = Double.parseDouble(currentText);
-                resultText.setText(String.valueOf(value / 100));
-            }
-        });
-
-        buttonClear.setOnClickListener(v -> resultText.setText(""));
-
-        buttonEqual.setOnClickListener(v -> {
-            secondValue = Double.parseDouble(resultText.getText().toString());
-            switch (currentOperator) {
-                case "+":
-                    resultText.setText(String.valueOf(firstValue + secondValue));
-                    break;
-                case "-":
-                    resultText.setText(String.valueOf(firstValue - secondValue));
-                    break;
-                case "×":
-                    resultText.setText(String.valueOf(firstValue * secondValue));
-                    break;
-                case "^":
-                    resultText.setText(String.valueOf(Math.pow(firstValue, secondValue)));
-                    break;
-                case "/":
-                    resultText.setText(String.valueOf(firstValue / secondValue));
-                    break;
-
-            }   });
     }
 
+    // Method to append text to the current expression
+    private void appendToExpression(String text) {
+        currentExpression += text;
+        resultText.setText(currentExpression);
+    }
+
+    // Method to clear the current expression
+    private void clearExpression() {
+        currentExpression = "";
+        resultText.setText("");
+    }
+
+    // Method to handle backspace functionality
+    private void backspace() {
+        if (currentExpression.length() > 0) {
+            currentExpression = currentExpression.substring(0, currentExpression.length() - 1);
+            resultText.setText(currentExpression);
+        }
+    }
+
+    // Method to evaluate the current expression and display the result
+    private void evaluateExpression() {
+        Expression expression = new Expression(currentExpression);
+        double result = expression.calculate();
+        resultText.setText(String.valueOf(result));
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Start MainActivity when back button is pressed
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }
